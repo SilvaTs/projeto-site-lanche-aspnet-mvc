@@ -28,7 +28,7 @@ public class Lanche
     [Column(TypeName = "decimal(10,2)")]
     [Range(1,999.99, ErrorMessage ="O preço deve estar entre e 999.99")]
     [Display(Name = "Preço")]
-    public string Preco { get; set; }
+    public decimal Preco { get; set; }
 
     [StringLength(200, ErrorMessage = "O {0} dever ter no máximo {1} caracteres")]
     [Display(Name = "Caminho Imagem Normal")]
