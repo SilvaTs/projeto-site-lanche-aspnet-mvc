@@ -1,4 +1,5 @@
 ﻿using LanchesMac.Context;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LanchesMac.Models;
 
@@ -33,5 +34,57 @@ public class CarrinhoCompra
         {
             CarrinhoCompraId = carrinhoId
         };
+    }
+
+    public void AdicionarAoCarrinho(Lanche lanche)
+    {
+        var carrinhoCompraItem = _appDbContext.CarrinhoCompraItens.SingleOrDefault(
+            s => s.Lanche.LancheId == lanche.LancheId &&
+            s.CarrinhoCompraId == CarrinhoCompraId
+            );
+
+        if (carrinhoCompraItem == null)
+        {
+            carrinhoCompraItem = new CarrinhoCompraItem
+            {
+                CarrinhoCompraId = CarrinhoCompraId,
+                Lanche = lanche,
+                Quantidade = 1
+            };
+
+            _appDbContext.CarrinhoCompraItens.Add(carrinhoCompraItem);
+        }
+        else
+        {
+            carrinhoCompraItem.Quantidade++;
+        }
+        _appDbContext.SaveChanges();
+    }
+
+    public int RemoverDoCarrinho(Lanche lanche)
+    {
+        var carrinhoCompraItem = _appDbContext.CarrinhoCompraItens.SingleOrDefault(
+                s => s.Lanche.LancheId == lanche.LancheId &&
+                s.CarrinhoCompraId == CarrinhoCompraId
+                );
+
+        var quantidadeLocal = 0;
+
+        if (carrinhoCompraItem is not null)
+        {
+            if (carrinhoCompraItem.Quantidade > 1)
+            {
+                carrinhoCompraItem.Quantidade--;
+                quantidadeLocal = carrinhoCompraItem.Quantidade;
+            }
+            else
+            {
+                _appDbContext.CarrinhoCompraItens.Remove(carrinhoCompraItem);
+            }
+
+            _appDbContext.SaveChanges();
+        }
+
+        return quantidadeLocal;
     }
 }
